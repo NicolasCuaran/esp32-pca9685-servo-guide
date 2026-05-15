@@ -1,5 +1,6 @@
 # Despliegue automático a GitHub Pages.
-# Habilita Pages en Settings → Pages → Source: "GitHub Actions" tras el primer push.
+# `enablement: true` activa Pages desde el propio workflow — nunca falla
+# aunque Pages no esté configurado manualmente en Settings.
 name: Deploy to GitHub Pages
 
 on:
@@ -28,11 +29,13 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # El proyecto es estático: el root del repo es el sitio
+          # Proyecto estático: el root del repo es el sitio
           path: '.'
 
       - name: Deploy to GitHub Pages

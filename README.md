@@ -1,11 +1,52 @@
-# ESP32 + PCA9685 + 4× SG90 · Guía 3D interactiva
+<div align="center">
+
+# 🔌 ESP32 + PCA9685 + SG90 · Guía 3D Interactiva
+
+**Aprende a conectar un ESP32-WROOM-32 a un driver PWM PCA9685 y mover 4 servos — en 3D, paso a paso, sin ambigüedades.**
+
+[![Deploy](https://github.com/NicolasCuaran/esp32-pca9685-servo-guide/actions/workflows/pages.yml/badge.svg)](https://github.com/NicolasCuaran/esp32-pca9685-servo-guide/actions/workflows/pages.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
+[![Three.js](https://img.shields.io/badge/Three.js-r160-000000?logo=three.js)](https://threejs.org/)
+[![No build](https://img.shields.io/badge/build-none-6fa8ff)]()
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-orange.svg)](CONTRIBUTING.md)
+
+### [▶ Abrir la demo en vivo](https://nicolascuaran.github.io/esp32-pca9685-servo-guide/)
+
+![Vista general del modelo 3D](docs/img/overview.png)
+
+</div>
+
+---
 
 Visualización 3D paso-a-paso de cómo conectar el driver PWM **PCA9685** (16 canales) a un
 **ESP32-WROOM-32** montado sobre su **placa expansora** (Electrodemy / DOIT) y mover **4 servos
 Tower Pro SG90** en los canales CH0–CH3. Pensada para que cualquiera entienda la conexión
 **sin ambigüedades**, con verificación en hardware real vía `arduino-cli`.
 
-**Stack:** HTML + JS modular + Three.js desde CDN. Sin Node.js, sin build, sin dependencias.
+> **Stack:** HTML + JS modular + Three.js desde CDN. **Sin Node.js, sin build, sin dependencias.**
+
+## ✨ Qué la hace distinta
+
+| | |
+|---|---|
+| 🧭 **Onboarding guiado** | Modal de bienvenida de 3 slides la primera vez |
+| 🔗 **Cables progresivos** | Cada paso revela su cable; los anteriores quedan visibles |
+| ✅ **Checklist de progreso** | Marca verde en los pasos ya completados |
+| 🖱️ **Ficha técnica por pin** | Click en cualquier pin → voltaje, función, descripción |
+| 📋 **Lista de materiales** | BOM con cantidades en el sidebar |
+| 🎥 **Cámara doble** | Órbita libre + vuelo WASD estilo FPS |
+| 🤖 **Verificado en hardware** | 4 sketches Arduino probados con `arduino-cli` + ESP32 real |
+
+<table>
+<tr>
+<td><img src="docs/img/welcome.png" alt="Welcome modal"></td>
+<td><img src="docs/img/progress.png" alt="Progreso con checkmarks"></td>
+</tr>
+<tr>
+<td align="center"><sub>Onboarding la primera vez</sub></td>
+<td align="center"><sub>Cables acumulativos + checkmarks</sub></td>
+</tr>
+</table>
 
 ---
 
