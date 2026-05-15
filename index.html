@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>ESP32-WROOM-32 ↔ PCA9685 · Guía 3D interactiva</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- Three.js desde CDN sin Node ni build -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.1/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ============== APP LAYOUT ============== -->
+  <div id="app">
+
+    <!-- Sidebar izquierda: lista de pasos -->
+    <aside id="sidebar">
+      <header class="brand">
+        <div class="logo-dot"></div>
+        <div>
+          <h1>ESP32 · PCA9685</h1>
+          <p>Guía 3D · I²C + PWM 16 canales</p>
+        </div>
+      </header>
+
+      <section class="boards">
+        <div class="board-card">
+          <span class="dot esp"></span>
+          <div>
+            <strong id="esp32-name">ESP32</strong>
+            <small id="esp32-notes"></small>
+          </div>
+        </div>
+        <div class="board-card">
+          <span class="dot pca"></span>
+          <div>
+            <strong id="pca-name">PCA9685</strong>
+            <small id="pca-notes"></small>
+          </div>
+        </div>
+      </section>
+
+      <h2 class="section-title">Materiales</h2>
+      <ul class="bom-list">
+        <li><span class="bom-qty">1</span><span class="bom-dot esp"></span><div><strong>ESP32-WROOM-32</strong><small>DevKit V1 30 pines</small></div></li>
+        <li><span class="bom-qty">1</span><span class="bom-dot exp"></span><div><strong>ESP32 Expansion Board</strong><small>Electrodemy / DOIT (jumper 3V3/5V)</small></div></li>
+        <li><span class="bom-qty">1</span><span class="bom-dot pca"></span><div><strong>PCA9685</strong><small>16-ch PWM I²C · 0x40</small></div></li>
+        <li><span class="bom-qty">4</span><span class="bom-dot servo"></span><div><strong>Tower Pro SG90</strong><small>MicroServo 9g · canales 0-3</small></div></li>
+        <li><span class="bom-qty">6+</span><span class="bom-dot wire"></span><div><strong>Cables Dupont H-H</strong><small>~10 cm para I²C/PWR</small></div></li>
+        <li><span class="bom-qty">1</span><span class="bom-dot usb"></span><div><strong>Cable Micro-USB</strong><small>Datos (no solo carga)</small></div></li>
+      </ul>
+
+      <h2 class="section-title">Pasos</h2>
+      <ol id="step-list" class="step-list"></ol>
+
+      <footer class="hints">
+        <kbd>←</kbd> <kbd>→</kbd> pasos · <kbd>A</kbd> todos · <kbd>L</kbd> etiquetas · <kbd>F</kbd> vuelo · <kbd>R</kbd> reset
+      </footer>
+    </aside>
+
+    <!-- Canvas 3D -->
+    <main id="stage">
+      <canvas id="webgl"></canvas>
+
+      <!-- Overlay 2D: líneas guía + etiquetas de pines -->
+      <svg id="leader-lines" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="pin-labels-overlay"></div>
+
+      <!-- Loader -->
+      <div id="loader"><span></span></div>
+
+      <!-- Controles flotantes -->
+      <div class="floating-controls">
+        <button id="btn-prev"   title="Paso anterior (←)">◀</button>
+        <button id="btn-next"   title="Siguiente paso (→)">▶</button>
+        <button id="btn-all"    title="Mostrar todas (A)">Todas</button>
+        <button id="btn-labels" title="Mostrar/ocultar etiquetas (L)" class="toggle on">Etiquetas</button>
+        <button id="btn-servos" title="Sweep automático en CH0-CH3" class="toggle servo-btn">Probar servos</button>
+        <button id="btn-fly"    title="Cámara libre WASD (F)" class="toggle">Vuelo libre</button>
+        <button id="btn-reset"  title="Vista inicial (R)">⟳</button>
+        <button id="btn-help"   title="Volver a abrir la guía (?)" class="help-btn">?</button>
+      </div>
+
+      <!-- Tooltip de pin -->
+      <div id="tooltip" class="tooltip">
+        <div class="tt-title">Pin</div>
+        <div class="tt-type">—</div>
+      </div>
+
+      <!-- HUD de cámara libre (visible solo en modo Vuelo) -->
+      <div id="fly-hud" class="fly-hud">
+        <div class="fh-title">Vuelo libre</div>
+        <div class="fh-row"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> mover · <kbd>Q</kbd>/<kbd>E</kbd> bajar/subir</div>
+        <div class="fh-row"><kbd>Shift</kbd> boost · <kbd>drag</kbd> mirar · <kbd>rueda</kbd> velocidad</div>
+        <div class="fh-row"><kbd>F</kbd> volver a órbita</div>
+      </div>
+    </main>
+
+    <!-- Panel derecho: detalle del paso -->
+    <aside id="panel">
+      <div class="panel-head">
+        <span id="step-badge" class="badge badge-required">Obligatorio</span>
+        <span id="step-counter" class="counter">1 / 6</span>
+      </div>
+
+      <div class="color-row">
+        <span class="color-label">Color del cable:</span>
+        <span id="step-color" class="color-chip"></span>
+      </div>
+
+      <h2 id="step-title">Cargando…</h2>
+      <p id="step-description"></p>
+
+      <pre><code id="step-code"></code></pre>
+
+      <details class="more">
+        <summary>Comprobación rápida con I²C scanner</summary>
+        <pre><code>#include &lt;Wire.h&gt;
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(21, 22);
+  Serial.println("Escaneando I2C...");
+  for (byte a = 1; a &lt; 127; a++) {
+    Wire.beginTransmission(a);
+    if (Wire.endTransmission() == 0)
+      Serial.printf("Dispositivo en 0x%02X\n", a);
+  }
+}
+void loop() {}</code></pre>
+        <p class="hint">Si todo está bien deberías ver <code>0x40</code> (PCA9685 por defecto).</p>
+      </details>
+
+      <details class="more">
+        <summary>Ejemplo: mover un servo en el canal 0</summary>
+        <pre><code>#include &lt;Wire.h&gt;
+#include &lt;Adafruit_PWMServoDriver.h&gt;
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
+
+void setup() {
+  Wire.begin(21, 22);
+  pwm.begin();
+  pwm.setPWMFreq(50);          // 50 Hz típico para servos
+}
+void loop() {
+  pwm.setPWM(0, 0, 150);       // ~0°
+  delay(1000);
+  pwm.setPWM(0, 0, 600);       // ~180°
+  delay(1000);
+}</code></pre>
+      </details>
+    </aside>
+  </div>
+
+  <!-- Entrada -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

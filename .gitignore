@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node (no debería existir, pero por si alguien lo añade)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Builds Arduino-cli
+build/
+*.bin
+*.elf
+*.map
+
+# Screenshots/output local de desarrollo
+_screenshots/
+*.local.png
+
+# Logs
+*.log
+
+# Cachés
+.cache/
+.parcel-cache/
+
+# Archivos personales (puertos COM, configs locales)
+config.local.*

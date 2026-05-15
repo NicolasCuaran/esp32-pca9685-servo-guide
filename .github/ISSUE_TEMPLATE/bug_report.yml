@@ -1,0 +1,56 @@
+name: 🐛 Reportar bug
+description: Algo no funciona como esperabas
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: ¿Qué pasó?
+      description: Describe el problema en 1–3 frases.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ¿Qué esperabas que pasara?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: |
+        1. Abro el index.html
+        2. Click en el botón X
+        3. Observo Y
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área afectada
+      options:
+        - Modelo 3D (geometría, materiales)
+        - Cables y conexiones
+        - Cámara / controles
+        - UI (panel, sidebar, modal)
+        - Sketches Arduino
+        - Otro
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador y versión
+      placeholder: 'Chrome 131, Firefox 122, Safari 17.4'
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Captura o info adicional
